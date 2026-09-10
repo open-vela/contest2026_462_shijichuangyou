@@ -3,5 +3,7 @@
 ############################################################################
 
 ifneq ($(CONFIG_LVX_USE_DEMO_CONTEST2026_000_HELLO_APP),)
-CONFIGURED_APPS += $(APPDIR)/packages/demos/contest2026_000_hello_app
+CONFIGURED_APPS += $(APPDIR)/packages/demos/contest2026_462_hello_app
+else ifneq ($(CONFIG_LVX_USE_DEMO_CONTEST2026_462_EBADGE),)
+CONFIGURED_APPS += $(APPDIR)/packages/demos/contest2026_462_hello_app
 endif

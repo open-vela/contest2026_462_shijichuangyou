@@ -8,3 +8,25 @@ config LVX_USE_DEMO_CONTEST2026_000_HELLO_APP
 	default n
 	---help---
 		Enable the contest 2026 team 000 hello app demo.
+
+config LVX_USE_DEMO_CONTEST2026_462_EBADGE
+	bool "ShiJi interactive eBadge (team 462)"
+	default n
+	depends on GRAPHICS_LVGL && LV_USE_NUTTX && INPUT_TOUCHSCREEN
+	help
+		Three original procedural characters, swipe navigation and tap
+		reactions. Run ebadge from NSH instead of another LVGL application.
+		This initial slice does not implement hardware power control or AI.
+
+if LVX_USE_DEMO_CONTEST2026_462_EBADGE
+
+config CONTEST2026_462_EBADGE_STACKSIZE
+	int "eBadge task stack size"
+	default 16384
+	range 4096 65536
+
+config CONTEST2026_462_EBADGE_INPUT_PATH
+	string "Touchscreen device"
+	default "/dev/input0"
+
+endif
