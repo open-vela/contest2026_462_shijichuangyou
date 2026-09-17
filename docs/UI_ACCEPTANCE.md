@@ -21,15 +21,18 @@ sudo usermod -aG dialout $USER
 ```
 
 烧录地址 `0x12010000` 来自板级 README，不是推测值。
+**注意路径**：`sftool` 只在工作区根目录的 `.tools/` 下，`openvela/.tools/` 不存在。
 
 ```sh
-cd /media/ran/EXTERNAL_USB/watch/openvela
+cd /media/ran/EXTERNAL_USB/watch
 .tools/sftool-0.2.5/sftool -c SF32LB52 -p /dev/ttyUSB0 -b 1000000 \
      --before default_reset --after soft_reset \
-     write_flash cmake_out/ebadge_app/nuttx.bin@0x12010000
+     write_flash openvela/cmake_out/ebadge_app/nuttx.bin@0x12010000
 ```
 
 固件：`openvela/cmake_out/ebadge_app/nuttx.bin`，9,458,652 字节。
+板级 README 里写的是 `cmake_out/lckfb_huangshan_pi/nuttx.bin`，那是 README 自己的
+构建目录名，与本项目的 `ebadge_app` 不是同一路径，不要照抄。
 若报 `Failed to connect to the chip`，拔插 USB 重试；若反复只打印 `SFBL`，
 说明 AMOLED 拉低了 USB 供电，改用 5V/2A 充电器或电池。
 
