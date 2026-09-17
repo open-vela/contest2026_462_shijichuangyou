@@ -1,0 +1,17 @@
+{
+  "status": "visual-proposal-awaiting-user-approval",
+  "character": "taitai",
+  "viewport": {"width": 390, "height": 450},
+  "viewport_source": "CONFIG_LCD_HOR_RES_MAX / CONFIG_LCD_VER_RES_MAX in current generated NuttX config",
+  "display_shape": "portrait-rectangle",
+  "hardware_source": "https://wiki.lckfb.com/zh-hans/hspi-sf32lb52/hardware/board.html",
+  "circular_mask": false,
+  "design_safe_insets": {"horizontal": 12, "vertical": 16, "physical_panel_measurement": false},
+  "small_preview": {"width_css_px": 195, "height_css_px": 225, "physical_size_simulation": false},
+  "portrait": {"source": "assets/portraits/taitai-v1.png", "x": 9, "y": 24, "width": 372, "height": 372, "fit": "contain", "modify_original": false},
+  "colors": {"paper": "#f7f3e6", "ink": "#405334", "caption": "#596747", "gold": "#b8a26a"},
+  "title": {"text": "苔苔", "baseline_y": 390, "font_px": 23, "letter_spacing_px": 6, "font": "Noto Serif CJK SC"},
+  "caption": {"text": "把喜欢，藏进春天。", "baseline_y": 417, "font_px": 15, "font": "Noto Sans CJK SC"},
+  "firmware_changes": false,
+  "notes": ["Both previews show the entire 390x450 rectangular scene without circular cropping or portrait distortion.", "Fonts are system font previews, not newly generated embedded font assets.", "Physical corner radius has not been measured; do not invent a panel clipping mask.", "No animation or device behavior is asserted by this static proposal."]
+}

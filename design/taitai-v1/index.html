@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>苔苔 · 森间来信 | 电子吧唧视觉预览</title>
+  <style>
+    :root { --paper:#eeede6; --ink:#33452d; --muted:#747966; --rule:#d3d6c7; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:radial-gradient(ellipse at 15% 5%,#faf8ef,transparent 65%),var(--paper); color:var(--ink); font-family:"Noto Sans CJK SC",sans-serif; }
+    main { max-width:1120px; margin:auto; padding:42px 42px 36px; }
+    header { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; border-bottom:1px solid var(--rule); padding-bottom:25px; }
+    .eyebrow { font-size:11px; letter-spacing:3px; color:var(--muted); margin:0 0 13px; }
+    h1 { font:400 clamp(25px,3.1vw,36px)/1.4 "Noto Serif CJK SC",serif; margin:0; letter-spacing:2px; }
+    .edition { text-align:right; font-size:12px; line-height:1.9; color:var(--muted); flex-shrink:0; }
+    .studies { display:grid; grid-template-columns:1fr 1fr; gap:48px; padding-top:28px; }
+    figure { margin:0; min-width:0; }
+    .meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; font-size:12px; }
+    .meta span { color:var(--muted); font-size:11px; }
+    .stage { height:478px; display:flex; justify-content:center; align-items:center; }
+    .screen { width:390px; max-width:100%; aspect-ratio:390 / 450; display:block; overflow:hidden; box-shadow:0 12px 32px #3a493415; }
+    .small-screen { width:195px; max-width:100%; aspect-ratio:390 / 450; display:block; overflow:hidden; box-shadow:0 12px 32px #3a493415; }
+    figcaption { font-size:12px; line-height:1.9; color:var(--muted); max-width:390px; margin:18px auto 0; }
+    .legend { margin:30px 0 0; padding-top:22px; border-top:1px solid var(--rule); display:flex; justify-content:space-between; gap:24px; font-size:12px; line-height:1.9; }
+    .swatches { display:flex; gap:13px; align-items:center; white-space:nowrap; }
+    .swatch { width:13px; height:13px; border-radius:50%; display:inline-block; vertical-align:middle; margin-right:5px; border:1px solid #33452d1a; }
+    .note { color:var(--muted); max-width:530px; margin:0; }
+    .controls { display:flex; gap:16px; align-items:center; margin-top:16px; font-size:12px; color:var(--muted); }
+    button { font:inherit; color:var(--ink); border:1px solid #a9b199; background:transparent; border-radius:2px; padding:7px 12px; cursor:pointer; }
+    button:focus-visible { outline:2px solid #506644; outline-offset:3px; }
+    .guides { visibility:hidden; pointer-events:none; }
+    body.show-guides .guides { visibility:visible; }
+    @media(max-width:760px) { main { padding:25px 18px; } header { align-items:start; } .edition { display:none; } .studies { grid-template-columns:1fr; gap:32px; } .stage { height:auto; min-height:0; } .legend { flex-direction:column; gap:12px; } }
+    @media(prefers-reduced-motion:no-preference) { main { animation:appear .55s ease-out both; } @keyframes appear { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } } }
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" style="position:absolute;overflow:hidden">
+    <defs>
+      <radialGradient id="glow"><stop stop-color="#fffdf4"/><stop offset="1" stop-color="#f0eddb"/></radialGradient>
+      <linearGradient id="bottom" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f7f3e6" stop-opacity="0"/><stop offset=".5" stop-color="#f7f3e6" stop-opacity=".94"/><stop offset="1" stop-color="#f7f3e6"/></linearGradient>
+      <pattern id="grain" width="11" height="13" patternUnits="userSpaceOnUse"><circle cx="2" cy="4" r=".5" fill="#69734d" opacity=".10"/><circle cx="8" cy="10" r=".4" fill="#69734d" opacity=".08"/></pattern>
+      <g id="sprig" fill="none" stroke="#879666" stroke-width="1.1" stroke-linecap="round">
+        <path d="M0 63 Q17 25 9 0"/>
+        <path d="M9 16 Q-7 5 -5 -5 Q13 -2 9 16 M12 29 Q27 11 29 5 Q13 6 12 29 M8 43 Q-10 32 -9 20 Q8 24 8 43 M3 56 Q22 47 25 33 Q7 35 3 56" fill="#dbe0c6"/>
+      </g>
+      <g id="flower" fill="#fffdf4" stroke="#b9bd9b" stroke-width=".65">
+        <ellipse cx="0" cy="-5" rx="3.5" ry="5"/><ellipse cx="5" cy="0" rx="5" ry="3.5"/><ellipse cx="0" cy="5" rx="3.5" ry="5"/><ellipse cx="-5" cy="0" rx="5" ry="3.5"/><circle r="2.2" fill="#c4ae69" stroke="none"/>
+      </g>
+      <symbol id="taitai" viewBox="0 0 390 450">
+        <rect width="390" height="450" fill="url(#glow)"/>
+        <rect width="390" height="450" fill="url(#grain)"/>
+        <path d="M17 67 V23 H66 M324 427 H373 V383" fill="none" stroke="#b5be99" stroke-width=".8"/>
+        <use href="#sprig" transform="translate(31 44) rotate(-24) scale(1.05)"/>
+        <use href="#sprig" transform="translate(357 386) rotate(156) scale(.9)"/>
+        <use href="#flower" transform="translate(48 35) scale(.65)"/>
+        <use href="#flower" transform="translate(342 414) scale(.7)"/>
+        <circle cx="322" cy="79" r="2" fill="#b8a26a"/>
+        <circle cx="58" cy="320" r="1.5" fill="#b8a26a"/>
+        <image href="../../assets/portraits/taitai-v1.png" x="9" y="24" width="372" height="372" preserveAspectRatio="xMidYMid meet"/>
+        <rect x="0" y="330" width="390" height="120" fill="url(#bottom)"/>
+        <path d="M149 365 Q162 368 173 365 M217 365 Q228 368 241 365" fill="none" stroke="#98a276" stroke-width=".75"/>
+        <use href="#flower" transform="translate(195 362) scale(.45)"/>
+        <text x="198" y="390" text-anchor="middle" fill="#405334" font-family="Noto Serif CJK SC,serif" font-size="23" letter-spacing="6">苔苔</text>
+        <text x="195" y="417" text-anchor="middle" fill="#596747" font-family="Noto Sans CJK SC,sans-serif" font-size="15">把喜欢，藏进春天。</text>
+      </symbol>
+    </defs>
+  </svg>
+  <main>
+    <header>
+      <div><p class="eyebrow">拾迹创游 / 角色收藏系列</p><h1>把苔苔，戴在身边。</h1></div>
+      <div class="edition">森间来信 · 苔苔<br>黄山派矩形屏适配 / 待确认</div>
+    </header>
+    <section class="studies" aria-label="黄山派矩形主屏原比例与缩小预览">
+      <figure>
+        <div class="meta">黄山派完整显示区域<span>390 × 450 像素 · 13∶15</span></div>
+        <div class="stage"><svg class="screen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 450" role="img" aria-label="苔苔完整主屏，奶油白底，大幅角色立绘与下方小题签">
+          <use href="#taitai" width="390" height="450"/>
+          <g class="guides" fill="none" stroke="#b36158" stroke-width="1" stroke-dasharray="4 4"><rect x="12" y="16" width="366" height="418"/><path d="M185 225h20M195 215v20"/></g>
+        </svg></div>
+        <figcaption>按官方 390×450 分辨率及当前固件配置设计。不做圆形遮罩，不压成正方形。桌面空间充足时按 390×450 CSS 像素显示，物理大小取决于浏览器缩放和屏幕密度。</figcaption>
+      </figure>
+      <figure>
+        <div class="meta">缩小可读性参考<span>195 × 225 CSS 像素 · 50%</span></div>
+        <div class="stage"><svg class="small-screen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 450" role="img" aria-label="完整矩形画面等比缩小百分之五十，不裁切、不拉伸">
+          <use href="#taitai" width="390" height="450"/>
+        </svg></div>
+        <figcaption>同一矩形画面等比缩小，不重新排版、不裁掉四角。此图不是 1.85 英寸物理尺寸模拟；真实小屏可读性仍需烧录后确认。</figcaption>
+      </figure>
+    </section>
+    <div class="legend">
+      <div class="swatches"><span><i class="swatch" style="background:#f7f3e6"></i>奶油白</span><span><i class="swatch" style="background:#405334"></i>苔绿</span><span><i class="swatch" style="background:#b8a26a"></i>花蕊金</span></div>
+      <p class="note">以黄山派矩形屏为唯一目标，保留原立绘。文字建议距左右边缘至少 12 像素、上下至少 16 像素，这是设计留白而非屏幕物理遮挡参数。<a href="https://wiki.lckfb.com/zh-hans/hspi-sf32lb52/hardware/board.html" target="_blank" rel="noopener noreferrer">官方屏幕资料</a>。此页尚未替换板端界面。</p>
+    </div>
+    <div class="controls"><button id="guide-toggle" type="button" aria-pressed="false">显示矩形留白辅助线</button><span>辅助线不属于最终主屏，不模拟硬件圆角</span><a href="../interactive/">体验隐藏菜单与三位角色</a></div>
+  </main>
+  <script>
+    const button = document.getElementById('guide-toggle');
+    button.addEventListener('click', () => {
+      const visible = document.body.classList.toggle('show-guides');
+      button.setAttribute('aria-pressed', String(visible));
+      button.textContent = visible ? '隐藏矩形留白辅助线' : '显示矩形留白辅助线';
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+--- a/vendor/sifli/boards/sf32lb52/lckfb_huangshan_pi/src/etc/init.d/rcS
++++ b/vendor/sifli/boards/sf32lb52/lckfb_huangshan_pi/src/etc/init.d/rcS
+@@ -1,2 +1,2 @@
+ sleep 3
+-vapp hap://app/com.application.lyra.demo &
++ebadge &

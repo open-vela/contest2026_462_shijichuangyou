@@ -1,0 +1,50 @@
+[
+  {
+    "id": 0,
+    "file": "assets/portraits/taitai-v1.png",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "source_sha256": "e920721b0001d380ccfe673fcb1aa8a5f4bd6b95e45468653310871fb929bd72",
+    "packed_size": [
+      372,
+      372
+    ],
+    "packed_bytes": 553536,
+    "format": "LV_COLOR_FORMAT_ARGB8888 / little-endian BGRA",
+    "origin": "AI-generated original project artwork"
+  },
+  {
+    "id": 1,
+    "file": "assets/portraits/nuannuan-v1.png",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "source_sha256": "3f0345ffa7351492f920f8ce65bfc52c8c9a4ab120e5bea63413c89306d6e6d8",
+    "packed_size": [
+      372,
+      372
+    ],
+    "packed_bytes": 553536,
+    "format": "LV_COLOR_FORMAT_ARGB8888 / little-endian BGRA",
+    "origin": "AI-generated original project artwork"
+  },
+  {
+    "id": 2,
+    "file": "assets/portraits/yueyue-v1.png",
+    "source_size": [
+      1254,
+      1254
+    ],
+    "source_sha256": "ecf9b38f2de72b508e0230c51c4207e48baf9acd509b348e84737e70db97e14c",
+    "packed_size": [
+      372,
+      372
+    ],
+    "packed_bytes": 553536,
+    "format": "LV_COLOR_FORMAT_ARGB8888 / little-endian BGRA",
+    "origin": "AI-generated original project artwork"
+  }
+]

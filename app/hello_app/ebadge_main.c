@@ -5,14 +5,19 @@
 #include <sys/boardctl.h>
 #include <lvgl/lvgl.h>
 #include "ui/ebadge_view.h"
+#include "ui/ebadge_pages.h"
 #ifdef CONFIG_LV_USE_NUTTX_LIBUV
 #include <uv.h>
 #endif
 
 int main(int argc, char *argv[])
 {
-  (void)argc;
-  (void)argv;
+  if (!ebadge_pages_configure(argc, argv))
+    {
+      fprintf(stderr, "usage: ebadge [--message UTF8_TEXT] [--date YYYY-MM-DD] "
+                      "[--tz-minutes -720..840]\n");
+      return 1;
+    }
   int status = 1;
   lv_nuttx_dsc_t info;
   lv_nuttx_result_t result = {0};

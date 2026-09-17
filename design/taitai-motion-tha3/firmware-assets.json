@@ -1,0 +1,76 @@
+{
+  "engine": "THA3 separable_float",
+  "model_author": "pkhungurn",
+  "model_license": "CC-BY-4.0",
+  "upstream": "https://github.com/pkhungurn/talking-head-anime-3-demo",
+  "crop": [
+    112,
+    0,
+    400,
+    288
+  ],
+  "format": "ARGB8888 little-endian BGRA",
+  "frames": [
+    {
+      "index": 0,
+      "name": "neutral",
+      "bytes": 331776,
+      "source_sha256": "ad3667214407e0971abca0df2b7c8b01a55f75db2f6e639c27c2810b96ce6f96"
+    },
+    {
+      "index": 1,
+      "name": "blink035",
+      "bytes": 331776,
+      "source_sha256": "80bcb0df5957d89f6767c5f8de0a4283ee7dd434f427952ae0201b8b2dc134a5"
+    },
+    {
+      "index": 2,
+      "name": "blink070",
+      "bytes": 331776,
+      "source_sha256": "b59a10e11d048dd22c3a08789a1bd7dca129666f08843a291a65e0dff43157ef"
+    },
+    {
+      "index": 3,
+      "name": "blink100",
+      "bytes": 331776,
+      "source_sha256": "ba4e35794b31fd9d3246e943ea030a9043bfc23b9ca0481bec292da9798a14d1"
+    },
+    {
+      "index": 4,
+      "name": "right004",
+      "bytes": 331776,
+      "source_sha256": "18d8f6df8a0ce8d4ba0c4112b29b648bc7ae0cf83689451ff3f68d5efc9ea8ec"
+    },
+    {
+      "index": 5,
+      "name": "right008",
+      "bytes": 331776,
+      "source_sha256": "d8582bedf35013d2cc73665a8e09807fd9113a30a1fbdd8f472156567e12885c"
+    },
+    {
+      "index": 6,
+      "name": "right012",
+      "bytes": 331776,
+      "source_sha256": "487090ad55974a83493427f78a27cca6c3c897caccab51867bd0543c701012a2"
+    },
+    {
+      "index": 7,
+      "name": "left004",
+      "bytes": 331776,
+      "source_sha256": "43f98840198d3ba3d8fd7eb558cf0beda6ebdcf7358793c7e5cde45a8fbe5169"
+    },
+    {
+      "index": 8,
+      "name": "left008",
+      "bytes": 331776,
+      "source_sha256": "b0ba6261b918c51601719779a146e28dfa62e4960623fae0db7f4eb6a65b5d02"
+    },
+    {
+      "index": 9,
+      "name": "left012",
+      "bytes": 331776,
+      "source_sha256": "3772d09ca24e17760f0341ca412ab33bf3a21ace3ce34dd56eb6da08dfbed3bd"
+    }
+  ],
+  "total_bytes": 3317760
+}

@@ -1,0 +1,193 @@
+{
+  "generated_at": "2026-09-13T08:48:01.525149+00:00",
+  "stage": "clips",
+  "source": "/media/ran/EXTERNAL_USB/watch/openvela/contest2026_462_shijichuangyou/assets/portraits/taitai-v1.png",
+  "source_sha256": "e920721b0001d380ccfe673fcb1aa8a5f4bd6b95e45468653310871fb929bd72",
+  "engine": "Talking Head Anime 3 / separable_float / CPU",
+  "upstream": "https://github.com/pkhungurn/talking-head-anime-3-demo",
+  "code_license": "MIT",
+  "model_license": "CC-BY-4.0",
+  "model_author": "pkhungurn",
+  "firmware_changed": false,
+  "normalization": {
+    "canvas": [
+      512,
+      512
+    ],
+    "portrait": [
+      256,
+      256
+    ],
+    "position": [
+      128,
+      8
+    ],
+    "screen": [
+      390,
+      450
+    ],
+    "preview_crop": [
+      112,
+      0,
+      400,
+      288
+    ]
+  },
+  "pose_baseline": "All 45 parameters zero, including mouth_aaa (closed mouth).",
+  "frames": [
+    {
+      "name": "neutral",
+      "pose": {},
+      "seconds": 1.716,
+      "path": "frames/neutral.png",
+      "sha256": "ad3667214407e0971abca0df2b7c8b01a55f75db2f6e639c27c2810b96ce6f96"
+    },
+    {
+      "name": "blink035",
+      "pose": {
+        "eye_wink_left": 0.35,
+        "eye_wink_right": 0.35
+      },
+      "seconds": 1.408,
+      "path": "frames/blink035.png",
+      "sha256": "80bcb0df5957d89f6767c5f8de0a4283ee7dd434f427952ae0201b8b2dc134a5"
+    },
+    {
+      "name": "blink070",
+      "pose": {
+        "eye_wink_left": 0.7,
+        "eye_wink_right": 0.7
+      },
+      "seconds": 1.307,
+      "path": "frames/blink070.png",
+      "sha256": "b59a10e11d048dd22c3a08789a1bd7dca129666f08843a291a65e0dff43157ef"
+    },
+    {
+      "name": "blink100",
+      "pose": {
+        "eye_wink_left": 1.0,
+        "eye_wink_right": 1.0
+      },
+      "seconds": 1.558,
+      "path": "frames/blink100.png",
+      "sha256": "ba4e35794b31fd9d3246e943ea030a9043bfc23b9ca0481bec292da9798a14d1"
+    },
+    {
+      "name": "right004",
+      "pose": {
+        "head_y": 0.04
+      },
+      "seconds": 1.325,
+      "path": "frames/right004.png",
+      "sha256": "18d8f6df8a0ce8d4ba0c4112b29b648bc7ae0cf83689451ff3f68d5efc9ea8ec"
+    },
+    {
+      "name": "right008",
+      "pose": {
+        "head_y": 0.08
+      },
+      "seconds": 1.372,
+      "path": "frames/right008.png",
+      "sha256": "d8582bedf35013d2cc73665a8e09807fd9113a30a1fbdd8f472156567e12885c"
+    },
+    {
+      "name": "right012",
+      "pose": {
+        "head_y": 0.12
+      },
+      "seconds": 1.363,
+      "path": "frames/right012.png",
+      "sha256": "487090ad55974a83493427f78a27cca6c3c897caccab51867bd0543c701012a2"
+    },
+    {
+      "name": "left004",
+      "pose": {
+        "head_y": -0.04
+      },
+      "seconds": 1.449,
+      "path": "frames/left004.png",
+      "sha256": "43f98840198d3ba3d8fd7eb558cf0beda6ebdcf7358793c7e5cde45a8fbe5169"
+    },
+    {
+      "name": "left008",
+      "pose": {
+        "head_y": -0.08
+      },
+      "seconds": 1.379,
+      "path": "frames/left008.png",
+      "sha256": "b0ba6261b918c51601719779a146e28dfa62e4960623fae0db7f4eb6a65b5d02"
+    },
+    {
+      "name": "left012",
+      "pose": {
+        "head_y": -0.12
+      },
+      "seconds": 1.483,
+      "path": "frames/left012.png",
+      "sha256": "3772d09ca24e17760f0341ca412ab33bf3a21ace3ce34dd56eb6da08dfbed3bd"
+    }
+  ],
+  "quality_status": "Experimental; visual approval required.",
+  "model_sha256": {
+    "eyebrow_decomposer": "1fbf5015083876653d64885481cc7b7145df0321101648b2692696042f97b799",
+    "eyebrow_morphing_combiner": "de9cacc5d47e65e9c5b4b6317c0e86a31a27a5d01378edff3010a10f6deab106",
+    "face_morpher": "e6977e73e3fcfc7614e37592f255d67d0eeba0cd86e7e700ecacffd7a4e53818",
+    "two_algo_face_body_rotator": "79d2609cdac8fc61335c3f3045dc20094324bd5854d6427b21d4c388928282cf",
+    "editor": "ecbc46808aeed3088a215d3884d0b162d76337211d73a9bb21cdd92fc45fc50b"
+  },
+  "torch_version": "2.6.0+cpu",
+  "clips": {
+    "blink": {
+      "sequence": [
+        "neutral",
+        "blink035",
+        "blink070",
+        "blink100",
+        "blink070",
+        "blink035",
+        "neutral"
+      ],
+      "durations_ms": [
+        1800,
+        60,
+        60,
+        100,
+        60,
+        60,
+        1200
+      ]
+    },
+    "head-turn": {
+      "sequence": [
+        "neutral",
+        "right004",
+        "right008",
+        "right012",
+        "right008",
+        "right004",
+        "neutral",
+        "left004",
+        "left008",
+        "left012",
+        "left008",
+        "left004",
+        "neutral"
+      ],
+      "durations_ms": [
+        1400,
+        120,
+        120,
+        400,
+        120,
+        120,
+        500,
+        120,
+        120,
+        400,
+        120,
+        120,
+        1400
+      ]
+    }
+  }
+}

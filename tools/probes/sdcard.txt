@@ -1,0 +1,27 @@
+# SD / TF card probe for the Huangshan Pi eBadge build.
+#
+# Run with:  python3 tools/board_nsh.py --script tools/probes/sdcard.txt
+#
+# Opening the serial port resets the board. The card lives on SPI1 and the
+# build already enables CONFIG_MMCSD (SPI mode) and CONFIG_FS_FAT. An earlier
+# probe recorded "infd open failed: 5" (EIO) with no card inserted, so this
+# script re-establishes whether the card itself is usable.
+#
+# /data is the writable tmpfs, so the mount point is created there instead of
+# on the read-only root pseudo-filesystem.
+
+ls /dev/mmcsd0
+
+mkdir /data/sdcard
+
+mount -t vfat /dev/mmcsd0 /data/sdcard
+
+ls /data/sdcard
+
+dd if=/dev/zero of=/data/sdcard/ebadge-probe.bin bs=512 count=1
+
+ls -l /data/sdcard
+
+cat /data/sdcard/ebadge-probe.bin
+
+umount /data/sdcard

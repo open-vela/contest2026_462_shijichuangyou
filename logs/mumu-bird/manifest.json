@@ -1,0 +1,109 @@
+{
+  "schema_version": "1.0",
+  "team_id": "contest2026_462_shijichuangyou",
+  "github_login": "mumu-bird",
+  "generator": "codex-rollout-local-adapter@0.2.0",
+  "sessions": [
+    {
+      "session_id": "01a099e6-7689-7083-b7a7-5f2a45336b58",
+      "tool": "codex",
+      "started_at": "2026-09-13T08:33:41.010Z",
+      "last_event_at": "2026-09-13T08:33:43.416Z",
+      "event_count": 4,
+      "file_path": "logs/mumu-bird/2026-09-13/codex__01a099e6-7689-7083-b7a7-5f2a45336b58.jsonl",
+      "collection_mode": "vscode_extension_partial",
+      "health": "degraded",
+      "data_completeness_warning": "Native Codex Desktop source; vscode_extension_partial is a schema compatibility mapping, not an assertion that VS Code was used; Private instructions, internal reasoning and compaction internals are excluded; no thinking content is fabricated",
+      "client": "desktop",
+      "source_originator": "Codex Desktop",
+      "workspace_gate_passed": true,
+      "historical_export": false,
+      "organizer_acceptance": "pending",
+      "source_cli_version": "0.153.4",
+      "start_record": 0,
+      "raw_event_count": 15,
+      "excluded_record_counts": {
+        "private_message": 1,
+        "private_reasoning": 1
+      },
+      "tokens_total": 20690,
+      "source_integrity": {
+        "main_sha256": "bd5ed6b4cfc854d403228bc1b7365a1062bebd80394b34dcdd500f1819e96dbb",
+        "main_size": 65495,
+        "captured_at": "2026-09-13T08:33:54.298672+00:00"
+      },
+      "export_sha256": "ef235f1e1b1e443cd20c64149b836bd53308857a7016ccac7313765c982dc5cd",
+      "redacted_count_total": 0,
+      "model": "gpt-5.3-codex-spark"
+    },
+    {
+      "session_id": "01a08b0c-9b4b-7da2-8465-99a662f173ae",
+      "tool": "codex",
+      "started_at": "2026-09-10T11:21:32.342Z",
+      "last_event_at": "2026-09-13T12:36:31.407Z",
+      "event_count": 2217,
+      "file_path": "logs/mumu-bird/2026-09-10/codex__01a08b0c-9b4b-7da2-8465-99a662f173ae.jsonl",
+      "collection_mode": "vscode_extension_partial",
+      "health": "degraded",
+      "data_completeness_warning": "User-authorized historical export outside the workspace; supplemental evidence only, organizer acceptance pending; Native Codex Desktop source; vscode_extension_partial is a schema compatibility mapping, not an assertion that VS Code was used; Private instructions, internal reasoning and compaction internals are excluded; no thinking content is fabricated",
+      "client": "desktop",
+      "source_originator": "Codex Desktop",
+      "workspace_gate_passed": false,
+      "historical_export": true,
+      "organizer_acceptance": "pending",
+      "source_cli_version": "0.153.4",
+      "start_record": 0,
+      "raw_event_count": 5212,
+      "excluded_record_counts": {
+        "private_message": 12,
+        "private_reasoning": 565,
+        "native_web_result_unavailable": 20,
+        "private_compaction": 7
+      },
+      "tokens_total": 77918738,
+      "source_integrity": {
+        "main_sha256": "02e25ac84a853305c9cc2d5eaeabc8d86fbf301ef4c3f688ea75bc000b6de24e",
+        "main_size": 81098449,
+        "captured_at": "2026-09-13T12:36:33.881490+00:00"
+      },
+      "export_sha256": "4ab7d8412e6f710973e8e869684f30a104eb44bcf698e88ff200bd434e585478",
+      "redacted_count_total": 0,
+      "model": "gpt-6-astra"
+    },
+    {
+      "session_id": "01a094cd-31de-7153-b625-d4dd4d6a6428",
+      "tool": "codex",
+      "started_at": "2026-09-12T08:48:20.697Z",
+      "last_event_at": "2026-09-13T12:04:18.593Z",
+      "event_count": 681,
+      "file_path": "logs/mumu-bird/2026-09-12/codex__01a094cd-31de-7153-b625-d4dd4d6a6428.jsonl",
+      "collection_mode": "vscode_extension_partial",
+      "health": "degraded",
+      "data_completeness_warning": "Native Codex Desktop source; vscode_extension_partial is a schema compatibility mapping, not an assertion that VS Code was used; Private instructions, internal reasoning and compaction internals are excluded; no thinking content is fabricated",
+      "client": "desktop",
+      "source_originator": "Codex Desktop",
+      "workspace_gate_passed": true,
+      "historical_export": false,
+      "organizer_acceptance": "pending",
+      "source_cli_version": "0.153.4",
+      "start_record": 0,
+      "raw_event_count": 1800,
+      "excluded_record_counts": {
+        "private_message": 7,
+        "private_reasoning": 170,
+        "private_compaction": 2,
+        "non_text_content": 4
+      },
+      "tokens_total": 22194502,
+      "source_integrity": {
+        "main_sha256": "53bf334e7930699b0cc8a8a6e4b28674ddb6cf7403b0a39adb4af5d61682a0d2",
+        "main_size": 17582191,
+        "captured_at": "2026-09-13T13:35:31.572292+00:00"
+      },
+      "export_sha256": "347105f0c36645e79dfa066890c28be53fb44c3401a3401a8d9ca0e6a792f327",
+      "redacted_count_total": 0,
+      "model": "gpt-6-astra"
+    }
+  ],
+  "updated_at": "2026-09-13T13:35:31.572292+00:00"
+}
