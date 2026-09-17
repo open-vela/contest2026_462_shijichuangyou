@@ -4,7 +4,9 @@
 #include "ebadge_portraits.h"
 #include "ebadge_motion.h"
 #include "ebadge_ornament.h"
+#include "ebadge_display.h"
 #include "../core/ebadge_controller.h"
+#include "../core/ebadge_power.h"
 #include "../core/ebadge_store.h"
 #include <lvgl/lvgl.h>
 #include <stdlib.h>
@@ -31,6 +33,15 @@ LV_FONT_DECLARE(ebadge_font_title_26);
 #define HINT_FADE_MS 700u
 #define SAVE_DEBOUNCE_MS 1500u
 
+/* Idle policy, from the project manual: dim at 15 s, remove panel power at
+ * 30 s. This is a worn display piece, so it must not black out so soon that
+ * nobody can show it; the caption and dots stay readable while dimmed.
+ */
+#define IDLE_DIM_MS 15000u
+#define IDLE_OFF_MS 30000u
+#define DIM_FADE_MS 400u
+#define DIM_OPA 170
+
 static struct
 {
   struct ebadge_controller controller;
@@ -47,9 +58,16 @@ static struct
   lv_obj_t *hint_pill;
   lv_obj_t *hint_label;
   lv_obj_t *menu; /* NULL while the menu is closed */
+  lv_obj_t *dim;  /* L1 dimming overlay; never clickable */
 
   lv_timer_t *timer;
   int32_t scale, origin_x, origin_y;
+
+  /* Idle display policy. The state machine itself is pure and host-tested;
+   * this file only applies the transitions.
+   */
+  struct ebadge_power power;
+  bool panel_off;
 
   /* Gesture state for the current press. */
   lv_point_t press;
@@ -72,6 +90,11 @@ static struct
 } view;
 
 static int32_t px(int value) { return value * view.scale / 1000; }
+
+/* Defined with the idle policy further down, but needed by the touch handler
+ * that runs before it in the file.
+ */
+static void wake_display(void);
 
 /* lv_anim_exec_xcb_t is (void *, int32_t) but the style setters take a third
  * selector argument, so they must never be cast into an animation callback:
@@ -164,9 +187,11 @@ static void animate_portrait(uint32_t now, bool tapped)
   static const uint16_t turn_ms[] = {120, 120, 400, 120, 120, 500,
                                     120, 120, 400, 120, 120};
   /* Only 苔苔 has generated frames; the other two stay still and rely on the
-   * tap ornament for feedback.
+   * tap ornament for feedback. The idle policy also stops the animation: that
+   * is L1, and it is the expensive part of a frame.
    */
-  bool paused = ebadge_pages_active() || view.menu || view.character != 0;
+  bool paused = ebadge_pages_active() || view.menu || view.character != 0 ||
+                view.power.state != EBADGE_POWER_ACTIVE;
   if (paused != view.motion_paused)
     {
       reset_motion(now);
@@ -407,8 +432,27 @@ static void gesture(lv_event_t *event)
 
   if (code == LV_EVENT_PRESSED)
     {
+      uint32_t pressed_at = lv_tick_get();
+      enum ebadge_power_state was = view.power.state;
+      /* A touch that only wakes a dark panel is consumed: the manual is
+       * explicit that the wake action must not also change the character, or
+       * one gesture produces two unpredictable results.
+       */
+      if (ebadge_power_activity(&view.power, pressed_at))
+        {
+          wake_display();
+          return;
+        }
+      if (was == EBADGE_POWER_DIMMED)
+        {
+          /* The picture was still visible, so the user could see what they
+           * were aiming at: clear the dim but let the touch do its job.
+           */
+          lv_obj_add_flag(view.dim, LV_OBJ_FLAG_HIDDEN);
+          lv_obj_set_style_opa(view.dim, LV_OPA_TRANSP, 0);
+        }
       view.press = point;
-      view.press_ms = lv_tick_get();
+      view.press_ms = pressed_at;
       view.max_dist_sq = 0;
       view.pressed = true;
       view.hold_fired = false;
@@ -489,6 +533,65 @@ static void slide_portrait(int direction)
 
 /* ------------------------------------------------------------------ frame */
 
+/* ------------------------------------------------------------ idle policy */
+
+static void fade_opa_to(lv_obj_t *obj, lv_opa_t to, uint32_t ms)
+{
+  lv_anim_t anim;
+  lv_anim_init(&anim);
+  lv_anim_set_var(&anim, obj);
+  lv_anim_set_exec_cb(&anim, anim_opa_cb);
+  lv_anim_set_values(&anim, lv_obj_get_style_opa(obj, 0), to);
+  lv_anim_set_duration(&anim, ms);
+  lv_anim_set_path_cb(&anim, lv_anim_path_ease_out);
+  lv_anim_delete(obj, anim_opa_cb);
+  lv_anim_start(&anim);
+}
+
+/* Undo whatever the idle policy did. Called from the touch handler, which
+ * still runs while the panel is dark because the main loop drives LVGL
+ * independently of this view's frame timer.
+ */
+static void wake_display(void)
+{
+  if (view.panel_off)
+    {
+      ebadge_display_on();
+      view.panel_off = false;
+    }
+  if (view.timer) lv_timer_resume(view.timer);
+  lv_obj_add_flag(view.dim, LV_OBJ_FLAG_HIDDEN);
+  lv_obj_set_style_opa(view.dim, LV_OPA_TRANSP, 0);
+}
+
+/* Apply the transitions the pure state machine reports. */
+static void apply_idle_policy(uint32_t now)
+{
+  enum ebadge_power_state before = view.power.state;
+  enum ebadge_power_state after = ebadge_power_update(&view.power, now);
+  if (after == before) return;
+
+  if (after == EBADGE_POWER_DIMMED)
+    {
+      /* L1 only. The overlay is cosmetic and is deliberately not treated as
+       * evidence that panel power was removed.
+       */
+      lv_obj_remove_flag(view.dim, LV_OBJ_FLAG_HIDDEN);
+      lv_obj_move_foreground(view.dim);
+      fade_opa_to(view.dim, DIM_OPA, DIM_FADE_MS);
+    }
+  else if (after == EBADGE_POWER_OFF)
+    {
+      /* L2: actually remove panel power, then stop the frame timer so nothing
+       * is redrawn while the screen is dark. ebadge_display_off() reports
+       * failure rather than pretending, so a missing device is visible in the
+       * appearance page status line instead of silently doing nothing.
+       */
+      view.panel_off = ebadge_display_off();
+      if (view.timer) lv_timer_pause(view.timer);
+    }
+}
+
 static void frame(lv_timer_t *timer)
 {
   (void)timer;
@@ -524,6 +627,9 @@ static void frame(lv_timer_t *timer)
 
   if (view.dirty && (uint32_t)(now - view.dirty_at) >= SAVE_DEBOUNCE_MS)
     persist();
+
+  /* Evaluated last, so the frame that gets dimmed has already been drawn. */
+  apply_idle_policy(now);
 }
 
 /* ------------------------------------------------------------------- hint */
@@ -696,6 +802,22 @@ bool ebadge_view_open(void)
   apply_theme();
   paint_character();
   lv_obj_add_event_cb(view.root, gesture, LV_EVENT_ALL, NULL);
+
+  /* L1 overlay. Left non-clickable on purpose: a touch on the dark screen must
+   * still reach the root gesture handler so it can wake the panel.
+   */
+  view.dim = lv_obj_create(view.root);
+  lv_obj_remove_style_all(view.dim);
+  lv_obj_remove_flag(view.dim, LV_OBJ_FLAG_CLICKABLE | LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_set_pos(view.dim, view.origin_x, view.origin_y);
+  lv_obj_set_size(view.dim, px(CANVAS_W), px(CANVAS_H));
+  lv_obj_set_style_bg_color(view.dim, lv_color_hex(0x000000), 0);
+  lv_obj_set_style_bg_opa(view.dim, LV_OPA_COVER, 0);
+  lv_obj_set_style_opa(view.dim, LV_OPA_TRANSP, 0);
+  lv_obj_add_flag(view.dim, LV_OBJ_FLAG_HIDDEN);
+
+  ebadge_power_init(&view.power, lv_tick_get(), IDLE_DIM_MS, IDLE_OFF_MS);
+  view.panel_off = false;
 
   view.dirty = false;
   view.opened = true;

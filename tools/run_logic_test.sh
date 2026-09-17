@@ -19,6 +19,7 @@ ${CC:-cc} -std=c11 -Wall -Wextra -Werror -O1 \
   tools/test_logic.c \
   app/hello_app/core/ebadge_calendar.c \
   app/hello_app/core/ebadge_record.c \
+  app/hello_app/core/ebadge_power.c \
   app/hello_app/ui/ebadge_theme.c
 
 exec "$binary"

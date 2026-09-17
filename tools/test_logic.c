@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "../app/hello_app/core/ebadge_calendar.h"
+#include "../app/hello_app/core/ebadge_power.h"
 #include "../app/hello_app/core/ebadge_record.h"
 #include "../app/hello_app/core/ebadge_store.h"
 #include "../app/hello_app/ui/ebadge_theme.h"
@@ -403,12 +404,105 @@ static void test_theme(void)
   CHECK(night.ink != own.ink, "night mode kept the light-surface ink colour");
 }
 
+/* The idle display policy. A wrong threshold here is invisible on a bench -
+ * the screen still looks right, it just never dims, or it dims mid-gesture -
+ * so the boundaries are pinned down explicitly.
+ */
+static void test_power(void)
+{
+  const uint32_t dim = 15000u, off = 30000u;
+
+  /* Boundaries: one millisecond either side of each edge. */
+  struct ebadge_power p;
+  ebadge_power_init(&p, 1000u, dim, off);
+  CHECK(ebadge_power_update(&p, 1000u + dim - 1) == EBADGE_POWER_ACTIVE,
+        "dimmed one millisecond early");
+  CHECK(ebadge_power_update(&p, 1000u + dim) == EBADGE_POWER_DIMMED,
+        "did not dim at the threshold");
+  CHECK(ebadge_power_update(&p, 1000u + off - 1) == EBADGE_POWER_DIMMED,
+        "powered off one millisecond early");
+  CHECK(ebadge_power_update(&p, 1000u + off) == EBADGE_POWER_OFF,
+        "did not power off at the threshold");
+
+  /* Once off it must stay off: repeatedly re-evaluating must not walk the
+   * state backwards or forwards. */
+  CHECK(ebadge_power_update(&p, 1000u + off + 60000u) == EBADGE_POWER_OFF,
+        "left the off state on its own");
+
+  /* Activity returns to active, and reports whether the touch was a wake. */
+  ebadge_power_init(&p, 0u, dim, off);
+  CHECK(!ebadge_power_activity(&p, 5000u), "active touch reported as a wake");
+  CHECK(p.state == EBADGE_POWER_ACTIVE, "active touch changed the state");
+  ebadge_power_update(&p, 5000u + dim);
+  CHECK(p.state == EBADGE_POWER_DIMMED, "setup: expected dimmed");
+  CHECK(!ebadge_power_activity(&p, 5000u + dim + 1u),
+        "dimmed touch reported as a wake");
+  CHECK(p.state == EBADGE_POWER_ACTIVE, "dimmed touch did not undim");
+  /* That undim touch restarted the idle count, so the off threshold is now
+   * measured from it rather than from the original start.
+   */
+  const uint32_t resumed = 5000u + dim + 1u;
+  ebadge_power_update(&p, resumed + off);
+  CHECK(p.state == EBADGE_POWER_OFF, "setup: expected off");
+  CHECK(ebadge_power_activity(&p, resumed + off + 1u),
+        "touch on a dark panel was not reported as a wake");
+  CHECK(p.state == EBADGE_POWER_ACTIVE, "wake did not restore active");
+
+  /* Activity must restart the idle count, not merely clear the state. */
+  ebadge_power_init(&p, 0u, dim, off);
+  ebadge_power_activity(&p, 14000u);
+  CHECK(ebadge_power_update(&p, 14000u + dim - 1) == EBADGE_POWER_ACTIVE,
+        "idle timer was not reset by activity");
+  CHECK(ebadge_power_update(&p, 14000u + dim) == EBADGE_POWER_DIMMED,
+        "idle timer reset by the wrong amount");
+
+  /* A zero threshold disables that stage, which is how the always-on display
+   * mode works without a second code path. */
+  ebadge_power_init(&p, 0u, 0u, 0u);
+  CHECK(ebadge_power_update(&p, 3600000u) == EBADGE_POWER_ACTIVE,
+        "zero thresholds still dimmed");
+  ebadge_power_init(&p, 0u, dim, 0u);
+  CHECK(ebadge_power_update(&p, dim) == EBADGE_POWER_DIMMED,
+        "dim disabled by a zero off threshold");
+  CHECK(ebadge_power_update(&p, 3600000u) == EBADGE_POWER_DIMMED,
+        "zero off threshold still powered the panel down");
+
+  /* Unsigned differences must survive the 32-bit tick wrap. */
+  ebadge_power_init(&p, 0xfffff000u, dim, off);
+  CHECK(ebadge_power_update(&p, 0xfffff000u + dim) == EBADGE_POWER_DIMMED,
+        "dim threshold broken across the tick wrap");
+  CHECK(ebadge_power_update(&p, 0xfffff000u + off) == EBADGE_POWER_OFF,
+        "off threshold broken across the tick wrap");
+
+  /* An off threshold below the dim threshold is clamped rather than trusted:
+   * skipping L1 entirely would look like a fault. */
+  ebadge_power_init(&p, 0u, off, dim);
+  CHECK(p.off_after_ms == off, "off threshold below dim was not clamped");
+  CHECK(ebadge_power_update(&p, dim - 1u) == EBADGE_POWER_ACTIVE,
+        "clamped policy dimmed early");
+
+  /* Rendering may only stop once panel power is actually gone. */
+  CHECK(!ebadge_power_rendering_paused(EBADGE_POWER_ACTIVE),
+        "active paused rendering");
+  CHECK(!ebadge_power_rendering_paused(EBADGE_POWER_DIMMED),
+        "dimmed paused rendering");
+  CHECK(ebadge_power_rendering_paused(EBADGE_POWER_OFF),
+        "off did not pause rendering");
+
+  /* NULL must not fault; the UI calls these every frame. */
+  CHECK(ebadge_power_update(NULL, 0u) == EBADGE_POWER_ACTIVE,
+        "NULL update did not return active");
+  CHECK(!ebadge_power_activity(NULL, 0u), "NULL activity reported a wake");
+  ebadge_power_init(NULL, 0u, dim, off);
+}
+
 int main(void)
 {
   printf("ebadge logic tests\n");
   test_record();
   test_calendar();
   test_theme();
+  test_power();
   printf("\n%d checks, %d failures\n", checks, failures);
   if (failures)
     {
