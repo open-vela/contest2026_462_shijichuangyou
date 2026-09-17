@@ -1,0 +1,53 @@
+{
+  "workspace": "/media/ran/EXTERNAL_USB/watch/openvela",
+  "repo_initialized": true,
+  "free_bytes": 1650838843392,
+  "tools": {
+    "git": {
+      "available": true,
+      "path": "/usr/bin/git",
+      "exit_code": 0,
+      "version": "git version 2.43.0"
+    },
+    "git-lfs": {
+      "available": true,
+      "path": "/media/ran/EXTERNAL_USB/watch/.tools/root/usr/bin/git-lfs",
+      "exit_code": 0,
+      "version": "git-lfs/3.4.1 (GitHub; linux amd64; go 1.22.2)"
+    },
+    "cmake": {
+      "available": true,
+      "path": "/usr/bin/cmake",
+      "exit_code": 0,
+      "version": "cmake version 3.28.3"
+    },
+    "ninja": {
+      "available": true,
+      "path": "/media/ran/EXTERNAL_USB/watch/.tools/root/usr/bin/ninja",
+      "exit_code": 0,
+      "version": "1.11.1"
+    },
+    "arm-none-eabi-gcc": {
+      "available": true,
+      "path": "/media/ran/EXTERNAL_USB/watch/.tools/root/usr/bin/arm-none-eabi-gcc",
+      "exit_code": 0,
+      "version": "arm-none-eabi-gcc (15:13.2.rel1-2) 13.2.1 20231009"
+    }
+  },
+  "source_files": {
+    "nuttx/CMakeLists.txt": true,
+    "apps/CMakeLists.txt": true,
+    "vendor/sifli/boards/sf32lb52/lckfb_huangshan_pi/configs/nsh/defconfig": true
+  },
+  "serial": [
+    {
+      "device": "/dev/ttyUSB0",
+      "identity": "usb-1a86_USB_Serial-if00-port0",
+      "read_write_access": false,
+      "hardware_identity_confirmed": false
+    }
+  ],
+  "firmware_build": "NOT_RUN",
+  "hardware_validation": "NOT_RUN",
+  "note": "File presence does not certify a complete repo sync or build."
+}
