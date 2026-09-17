@@ -49,6 +49,7 @@
 | `board/contest_board/` | 板级适配目录（本次未使用） |
 | `quickapp/hello_quickapp/` | 快应用目录（本次未使用） |
 | `contest2026_462_shijichuangyou.xml` | 团队仓 manifest：把本仓子目录映射到 openvela 工程位置 |
+| `LICENSE` | Apache License 2.0 全文 |
 
 ---
 
@@ -183,6 +184,10 @@ python3 tools/verify_font_coverage.py   # 界面用字是否都有字形
 - 首次提交 PR 会触发 `cla/signature` 检查；需先在 [openvela 官网](https://openvela.com/#/community/cla) 用报名账号签署 CLA，然后在原 PR 下评论 `/check-cla` 触发复检。
 - 官方文档：<https://github.com/open-vela/docs/blob/dev-ai-contest-2026/zh-cn/contest_2026/code_submission_guide.md>
 
-## 附：第三方素材许可
+## 附：开源许可
 
-字体与立绘的许可说明见 `docs/FONT_LICENSE.txt` 与 `docs/PORTRAIT_ASSETS.md`。
+- **本项目代码遵循 Apache License 2.0**（《大赛总览》要求参赛作品遵循 Apache 2.0），全文见仓根 `LICENSE`。
+- 本项目手写源文件均带 `SPDX-License-Identifier: Apache-2.0` 标识。以下四类文件除外，原因如实说明：
+  - `ui/ebadge_font_zh_20.c`、`ui/ebadge_font_title_26.c`、`ui/ebadge_portraits.c`、`ui/ebadge_motion.c` —— 由 `tools/` 下脚本生成，头部为生成器注释，**手改会在下次生成时丢失**；
+  - `hello_app_main.c` —— 组委会模板自带的 team 000 示例，与 `CMakeLists.txt` 中 `CONFIG_LVX_USE_DEMO_CONTEST2026_000_HELLO_APP` 分支绑定。本作品走的是 `CONFIG_LVX_USE_DEMO_CONTEST2026_462_EBADGE` 分支（实测 `.config` 中 team 000 为 `not set`），故该文件**不参与本次构建**。
+- 第三方素材（字体、立绘）的许可与来源说明见 `docs/FONT_LICENSE.txt` 与 `docs/PORTRAIT_ASSETS.md`，**其许可不因本项目采用 Apache 2.0 而改变**。
