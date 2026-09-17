@@ -42,6 +42,39 @@ static const char *const paper_notes[EBADGE_PAPER_COUNT] = {
   "只改界面底色，不改立绘"
 };
 
+/* The companion speaks in its own voice rather than reporting the time like a
+ * clock app: this is what makes the page feel like a character, not a widget.
+ * Every character here must be in the generated body font; run
+ * tools/verify_font_coverage.py after editing.
+ */
+static const char *const greetings[EBADGE_CHARACTER_COUNT]
+                                  [EBADGE_DAYPART_COUNT] = {
+  {
+    "早上好呀，今天也要好好生长哦。",
+    "午后的阳光正好，一起发会儿呆吧。",
+    "傍晚的风很轻，把喜欢吹给你。",
+    "夜深啦，做个甜甜的梦。"
+  },
+  {
+    "早安，先伸个懒腰再出发吧。",
+    "这种天气最适合窝着晒太阳。",
+    "天黑了，我会一直陪着你。",
+    "该睡觉啦，明天也要精神满满的。"
+  },
+  {
+    "早上好，昨晚的月亮还记得你。",
+    "白天的梦，也是会发光的。",
+    "黄昏了，星星快要出来了。",
+    "月亮升起来了，早点休息吧。"
+  }
+};
+
+static const char *const taglines[EBADGE_CHARACTER_COUNT] = {
+  "\u266a 今天也要闪闪发光",
+  "\u2661 把温暖分你一半",
+  "\u2605 也许个愿吧"
+};
+
 const struct ebadge_character *ebadge_theme_character(unsigned int index)
 {
   if (index >= EBADGE_CHARACTER_COUNT) index = 0;
@@ -84,4 +117,26 @@ const char *ebadge_theme_paper_note(enum ebadge_paper paper)
 {
   if (paper >= EBADGE_PAPER_COUNT) paper = EBADGE_PAPER_CHARACTER;
   return paper_notes[paper];
+}
+
+enum ebadge_daypart ebadge_theme_daypart(int hour)
+{
+  if (hour < 0 || hour > 23) return EBADGE_DAYPART_MORNING;
+  if (hour >= 5 && hour < 11) return EBADGE_DAYPART_MORNING;
+  if (hour >= 11 && hour < 17) return EBADGE_DAYPART_AFTERNOON;
+  if (hour >= 17 && hour < 22) return EBADGE_DAYPART_EVENING;
+  return EBADGE_DAYPART_NIGHT;
+}
+
+const char *ebadge_theme_greeting(unsigned int index, enum ebadge_daypart part)
+{
+  if (index >= EBADGE_CHARACTER_COUNT) index = 0;
+  if (part >= EBADGE_DAYPART_COUNT) part = EBADGE_DAYPART_MORNING;
+  return greetings[index][part];
+}
+
+const char *ebadge_theme_tagline(unsigned int index)
+{
+  if (index >= EBADGE_CHARACTER_COUNT) index = 0;
+  return taglines[index];
 }

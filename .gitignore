@@ -1,0 +1,3 @@
+# Python bytecode caches: generated, machine-specific, never a deliverable.
+__pycache__/
+*.pyc

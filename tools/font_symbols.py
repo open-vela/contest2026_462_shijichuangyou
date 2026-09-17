@@ -39,6 +39,13 @@ CJK_PUNCTUATION = (
     "\uff0b\uff0d\uff1d\uff20\uffe5"
 )
 
+# Decorative glyphs for the illustrated (ACG) look: music notes, hearts and
+# flowers for the cheer page, triangles for speech-bubble tails, a tick for the
+# selected state. Availability was checked against Noto Sans CJK SC rather than
+# assumed - U+2727, U+2726, U+263E, U+263D, U+22C6 and U+2729 are NOT in that
+# face, so they must not be used in UI strings.
+DECORATION = "\u266a\u266b\u2661\u2665\u273f\u2740\u25bd\u25bc\u2713"
+
 # Full-width digits and Latin letters (GB2312 row 3) so a Chinese-styled label
 # can use them without falling back to a half-width face.
 FULLWIDTH = "".join(
@@ -82,6 +89,7 @@ TITLE_TEXT = (
     "文字应援"
     "纪念日"
     "配色"
+    "心动时刻"
     "与你共度"
     "把喜欢说出来"
     "值得记住的日子"
@@ -102,7 +110,7 @@ def body_symbols(level=1):
     LVGL's default 20-bit glyph index limit; see the module docstring.
     """
     seen = {}
-    for char in ASCII + CJK_PUNCTUATION + FULLWIDTH + gb2312_hanzi(level):
+    for char in ASCII + CJK_PUNCTUATION + DECORATION + FULLWIDTH + gb2312_hanzi(level):
         seen[char] = None
     return "".join(seen)
 

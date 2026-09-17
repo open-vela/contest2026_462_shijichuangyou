@@ -334,11 +334,81 @@ static void test_calendar(void)
   CHECK(gaps == 0, "%d discontinuities in the ordinal sequence", gaps);
 }
 
+/* The companion's voice and the palette invariants the pages rely on. Pure
+ * logic, so a wrong bucket boundary shows up here instead of as the wrong
+ * sentence on the panel.
+ */
+static void test_theme(void)
+{
+  static const struct { int hour; enum ebadge_daypart want; } buckets[] = {
+    {0, EBADGE_DAYPART_NIGHT},      {4, EBADGE_DAYPART_NIGHT},
+    {5, EBADGE_DAYPART_MORNING},    {10, EBADGE_DAYPART_MORNING},
+    {11, EBADGE_DAYPART_AFTERNOON}, {16, EBADGE_DAYPART_AFTERNOON},
+    {17, EBADGE_DAYPART_EVENING},   {21, EBADGE_DAYPART_EVENING},
+    {22, EBADGE_DAYPART_NIGHT},     {23, EBADGE_DAYPART_NIGHT}
+  };
+  for (unsigned i = 0; i < sizeof(buckets) / sizeof(buckets[0]); i++)
+    CHECK(ebadge_theme_daypart(buckets[i].hour) == buckets[i].want,
+          "hour %d bucketed wrong", buckets[i].hour);
+
+  /* Out-of-range hours must not index past the greeting table. */
+  CHECK(ebadge_theme_daypart(-1) == EBADGE_DAYPART_MORNING,
+        "negative hour not clamped");
+  CHECK(ebadge_theme_daypart(24) == EBADGE_DAYPART_MORNING,
+        "hour 24 not clamped");
+
+  /* Every combination, including out-of-range indices, returns usable text. */
+  for (unsigned c = 0; c <= EBADGE_CHARACTER_COUNT; c++)
+    {
+      CHECK(ebadge_theme_tagline(c) && ebadge_theme_tagline(c)[0],
+            "tagline %u is empty", c);
+      for (unsigned p = 0; p <= EBADGE_DAYPART_COUNT; p++)
+        {
+          const char *line = ebadge_theme_greeting(c, (enum ebadge_daypart)p);
+          CHECK(line && line[0], "greeting %u/%u is empty", c, p);
+        }
+    }
+
+  /* The clock has to actually change its sentence through the day, otherwise
+   * the greeting is decoration rather than behaviour.
+   */
+  for (unsigned c = 0; c < EBADGE_CHARACTER_COUNT; c++)
+    {
+      const char *morning = ebadge_theme_greeting(c, EBADGE_DAYPART_MORNING);
+      const char *night = ebadge_theme_greeting(c, EBADGE_DAYPART_NIGHT);
+      CHECK(strcmp(morning, night) != 0,
+            "character %u says the same thing day and night", c);
+    }
+
+  /* Duplicate names would make the appearance page show two identical chips. */
+  for (unsigned a = 0; a < EBADGE_CHARACTER_COUNT; a++)
+    for (unsigned b = a + 1; b < EBADGE_CHARACTER_COUNT; b++)
+      CHECK(strcmp(ebadge_theme_character(a)->name,
+                   ebadge_theme_character(b)->name) != 0,
+            "characters %u and %u share a name", a, b);
+  CHECK(ebadge_theme_character(EBADGE_CHARACTER_COUNT)->name ==
+        ebadge_theme_character(0)->name, "character index not clamped");
+
+  /* A paper mode replaces the surface colours but must leave the character's
+   * accent alone: that is what keeps the companion recognisable.
+   */
+  struct ebadge_palette own = ebadge_theme_resolve(1, EBADGE_PAPER_CHARACTER);
+  struct ebadge_palette plain = ebadge_theme_resolve(1, EBADGE_PAPER_PLAIN);
+  struct ebadge_palette night = ebadge_theme_resolve(1, EBADGE_PAPER_NIGHT);
+  CHECK(plain.paper != night.paper, "plain and night share a paper colour");
+  CHECK(plain.gold == own.gold && night.gold == own.gold,
+        "paper mode overrode the character accent");
+  CHECK(plain.paper == ebadge_theme_resolve(2, EBADGE_PAPER_PLAIN).paper,
+        "plain paper colour depends on the character");
+  CHECK(night.ink != own.ink, "night mode kept the light-surface ink colour");
+}
+
 int main(void)
 {
   printf("ebadge logic tests\n");
   test_record();
   test_calendar();
+  test_theme();
   printf("\n%d checks, %d failures\n", checks, failures);
   if (failures)
     {
