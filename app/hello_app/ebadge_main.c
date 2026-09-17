@@ -6,6 +6,7 @@
 #include <lvgl/lvgl.h>
 #include "ui/ebadge_view.h"
 #include "ui/ebadge_pages.h"
+#include "core/ebadge_rtc.h"
 #ifdef CONFIG_LV_USE_NUTTX_LIBUV
 #include <uv.h>
 #endif
@@ -30,6 +31,16 @@ int main(int argc, char *argv[])
   if (boardctl(BOARDIOC_INIT, 0) < 0) return 1;
 #endif
   puts("ebadge 0.1.0; local-interaction slice; hardware acceptance pending");
+
+  /* Reconcile the clock before anything reads it: the clock page decides
+   * whether it may show a real time from the system clock, and the
+   * anniversary page falls back to "calibrated" wording when it may not, so
+   * this has to happen before the first paint.
+   */
+  enum ebadge_rtc_action rtc_action = ebadge_rtc_sync();
+  printf("ebadge: %s (action %d)\n", ebadge_rtc_status(), (int)rtc_action);
+  fflush(stdout);
+
   lv_init();
   lv_nuttx_dsc_init(&info);
 #ifdef CONFIG_LV_USE_NUTTX_LCD

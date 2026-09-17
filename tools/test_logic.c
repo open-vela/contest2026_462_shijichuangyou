@@ -15,6 +15,7 @@
 #include "../app/hello_app/core/ebadge_calendar.h"
 #include "../app/hello_app/core/ebadge_power.h"
 #include "../app/hello_app/core/ebadge_record.h"
+#include "../app/hello_app/core/ebadge_rtc_logic.h"
 #include "../app/hello_app/core/ebadge_shake.h"
 #include "../app/hello_app/core/ebadge_store.h"
 #include "../app/hello_app/ui/ebadge_theme.h"
@@ -597,6 +598,61 @@ static void test_shake(void)
   ebadge_shake_init(NULL);
 }
 
+/* RTC reconciliation. The bug that matters is directional: copying an unset
+ * system clock (1970) into a good RTC destroys the only correct copy of the
+ * time, and nothing looks wrong until the next boot.
+ */
+static void test_rtc(void)
+{
+  /* What counts as a plausible year, matching the clock page's own rule. */
+  CHECK(!ebadge_rtc_year_valid(1970), "1970 was treated as valid");
+  CHECK(!ebadge_rtc_year_valid(2023), "2023 was treated as valid");
+  CHECK(ebadge_rtc_year_valid(2024), "2024 was treated as invalid");
+  CHECK(ebadge_rtc_year_valid(2026), "2026 was treated as invalid");
+  CHECK(ebadge_rtc_year_valid(2099), "2099 was treated as invalid");
+  CHECK(!ebadge_rtc_year_valid(2100), "2100 was treated as valid");
+
+  /* Neither side knows the time: never invent one. */
+  CHECK(ebadge_rtc_decide(false, false, 0) == EBADGE_RTC_DO_NOTHING,
+        "invented a time from nothing");
+  CHECK(ebadge_rtc_decide(false, false, 999999) == EBADGE_RTC_DO_NOTHING,
+        "invented a time from nothing, ignoring the skew");
+
+  /* The boot case: the system clock is at 1970 and the RTC holds the time set
+   * last time the badge was used. */
+  CHECK(ebadge_rtc_decide(false, true, 0) == EBADGE_RTC_ADOPT_RTC,
+        "did not restore the clock from the RTC");
+
+  /* The catastrophic direction: an unset system clock must never be written
+   * into a good RTC, whatever the skew says. */
+  CHECK(ebadge_rtc_decide(false, true, -1700000000) == EBADGE_RTC_ADOPT_RTC,
+        "an unset system clock overwrote a valid RTC");
+  CHECK(ebadge_rtc_decide(false, true, 1700000000) == EBADGE_RTC_ADOPT_RTC,
+        "an unset system clock overwrote a valid RTC");
+
+  /* The host set a time and the RTC is unset: persist it. */
+  CHECK(ebadge_rtc_decide(true, false, 0) == EBADGE_RTC_ADOPT_SYSTEM,
+        "did not persist a host-set time");
+
+  /* Both sides agree: leave the RTC alone rather than rewriting it. */
+  CHECK(ebadge_rtc_decide(true, true, 0) == EBADGE_RTC_DO_NOTHING,
+        "rewrote an RTC that already agreed");
+
+  /* Small differences are drift and must not cause a write. */
+  CHECK(ebadge_rtc_decide(true, true, 30) == EBADGE_RTC_DO_NOTHING,
+        "drift caused a rewrite (positive)");
+  CHECK(ebadge_rtc_decide(true, true, -30) == EBADGE_RTC_DO_NOTHING,
+        "drift caused a rewrite (negative)");
+  CHECK(ebadge_rtc_decide(true, true, EBADGE_RTC_SKEW_TOLERANCE_S) ==
+        EBADGE_RTC_DO_NOTHING, "the tolerance boundary caused a rewrite");
+
+  /* A deliberate correction is adopted in either direction. */
+  CHECK(ebadge_rtc_decide(true, true, EBADGE_RTC_SKEW_TOLERANCE_S + 1) ==
+        EBADGE_RTC_ADOPT_SYSTEM, "a correction was not adopted");
+  CHECK(ebadge_rtc_decide(true, true, -(EBADGE_RTC_SKEW_TOLERANCE_S + 1)) ==
+        EBADGE_RTC_ADOPT_SYSTEM, "a correction was not adopted (negative)");
+}
+
 int main(void)
 {
   printf("ebadge logic tests\n");
@@ -605,6 +661,7 @@ int main(void)
   test_theme();
   test_power();
   test_shake();
+  test_rtc();
   printf("\n%d checks, %d failures\n", checks, failures);
   if (failures)
     {

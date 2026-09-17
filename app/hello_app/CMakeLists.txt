@@ -15,6 +15,7 @@ if(CONFIG_LVX_USE_DEMO_CONTEST2026_462_EBADGE)
     SRCS ebadge_main.c core/ebadge_controller.c core/ebadge_store.c
          core/ebadge_calendar.c core/ebadge_record.c core/ebadge_power.c
          core/ebadge_shake.c core/ebadge_imu.c
+         core/ebadge_rtc_logic.c core/ebadge_rtc.c
          ui/ebadge_theme.c ui/ebadge_ornament.c ui/ebadge_deco.c
          ui/ebadge_display.c
          ui/ebadge_view.c ui/ebadge_pages.c ui/ebadge_date_editor.c
