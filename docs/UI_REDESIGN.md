@@ -132,6 +132,7 @@ sh tools/run_logic_test.sh
 | 设置记录编解码 | PASS | `sh tools/run_logic_test.sh`：1511 项检查 0 失败（含 1392 组单比特翻转全部检出） |
 | 纪念日天数计算 | PASS | 同上；2024–2099 全区间序数与逐月累加一致，跨闰日边界正确 |
 | 静态内存 | PASS（设计值） | 所有对象在启动时创建，手势与动画不新建对象 |
+| 布局几何 | PASS（静态审计） | 21 组矩形全部在 390×450 画布内、无意外重叠；见 `UI_ACCEPTANCE.md` |
 | 真机观感与手势 | **NOT_RUN** | 需要烧录后按 `docs/UI_ACCEPTANCE.md` 逐项确认 |
 | 内存卡读写 | **NOT_RUN** | 需先运行 `tools/probes/sdcard.txt`；历史探测在无卡时读失败（EIO） |
 
