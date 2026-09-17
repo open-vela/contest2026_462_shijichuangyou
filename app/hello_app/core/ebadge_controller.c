@@ -63,6 +63,10 @@ void ebadge_controller_step(struct ebadge_controller *c, uint32_t now)
             navigate(c, event.kind == EBADGE_NEXT ? 1 : -1, now);
             break;
           case EBADGE_TAP:
+          case EBADGE_SHAKE:
+            /* A shake is the same kind of user activity as a tap, so it
+             * resets the idle clock and starts a reaction on the same terms.
+             */
             c->state.last_user_activity_ms = now;
             if (c->state.character_state == EBADGE_IDLE)
               {

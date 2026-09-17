@@ -6,6 +6,7 @@
 #include "ebadge_ornament.h"
 #include "ebadge_display.h"
 #include "../core/ebadge_controller.h"
+#include "../core/ebadge_imu.h"
 #include "../core/ebadge_power.h"
 #include "../core/ebadge_store.h"
 #include <lvgl/lvgl.h>
@@ -596,6 +597,19 @@ static void frame(lv_timer_t *timer)
 {
   (void)timer;
   uint32_t now = lv_tick_get();
+
+  /* The sensor never draws: it posts an event onto the controller's bounded
+   * queue exactly like a touch does, and the normal paint path reacts.
+   */
+  if (ebadge_imu_poll(now))
+    {
+      struct ebadge_event action = {0};
+      action.kind = EBADGE_SHAKE;
+      ebadge_controller_post(&view.controller, action);
+      /* A shake is user activity, so it must also postpone the idle dim. */
+      if (ebadge_power_activity(&view.power, now)) wake_display();
+    }
+
   ebadge_pages_tick(now);
   ebadge_controller_step(&view.controller, now);
   struct ebadge_state *state = &view.controller.state;
@@ -819,6 +833,11 @@ bool ebadge_view_open(void)
   ebadge_power_init(&view.power, lv_tick_get(), IDLE_DIM_MS, IDLE_OFF_MS);
   view.panel_off = false;
 
+  /* Opened here so the appearance page can report whether the accelerometer
+   * actually came up; a failure is reported, not hidden.
+   */
+  ebadge_imu_open();
+
   view.dirty = false;
   view.opened = true;
   frame(NULL);
@@ -839,6 +858,7 @@ void ebadge_view_close(void)
   if (view.opened && view.dirty) persist();
   menu_close();
   ebadge_ornament_close();
+  ebadge_imu_close();
   ebadge_pages_close();
   if (view.root) lv_obj_delete(view.root);
   ebadge_store_end();

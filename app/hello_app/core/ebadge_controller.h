@@ -10,7 +10,7 @@
 #define EBADGE_REACTION_MS 1200u
 
 enum ebadge_event_kind { EBADGE_TAP, EBADGE_PREV, EBADGE_NEXT,
-                         EBADGE_ANIMATION_DONE };
+                         EBADGE_SHAKE, EBADGE_ANIMATION_DONE };
 enum ebadge_character_state { EBADGE_IDLE, EBADGE_REACTING };
 
 struct ebadge_event

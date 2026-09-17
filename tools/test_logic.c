@@ -15,6 +15,7 @@
 #include "../app/hello_app/core/ebadge_calendar.h"
 #include "../app/hello_app/core/ebadge_power.h"
 #include "../app/hello_app/core/ebadge_record.h"
+#include "../app/hello_app/core/ebadge_shake.h"
 #include "../app/hello_app/core/ebadge_store.h"
 #include "../app/hello_app/ui/ebadge_theme.h"
 
@@ -496,6 +497,106 @@ static void test_power(void)
   ebadge_power_init(NULL, 0u, dim, off);
 }
 
+/* Shake detection. The failure that matters is not a crash: it is a detector
+ * that fires while the badge hangs still, or that never fires at all. So the
+ * tests drive sustained rest, a single shake, and repeated shaking.
+ */
+static void test_shake(void)
+{
+  /* One count is 0.488 mg at +-16 g, i.e. 4.7856 milli-m/s^2. 2049 counts is
+   * the resting 1 g that the baseline is built from.
+   */
+  CHECK(ebadge_accel_counts_to_milli(0) == 0, "zero count not zeroed");
+  CHECK(ebadge_accel_counts_to_milli(2049) == 9806,
+        "1 g conversion is wrong");
+  CHECK(ebadge_accel_counts_to_milli(-2049) == -9806,
+        "negative conversion is wrong");
+  CHECK(ebadge_accel_counts_to_milli(32767) == 156822,
+        "full-scale conversion is wrong");
+
+  /* Magnitude, axis aligned and on a 3-4-5 diagonal. */
+  struct ebadge_accel a = {0, 0, 9806};
+  CHECK(ebadge_accel_magnitude(&a) == 9806, "axis magnitude is wrong");
+  a.x = 3000; a.y = 4000; a.z = 0;
+  CHECK(ebadge_accel_magnitude(&a) == 5000, "diagonal magnitude is wrong");
+  a.x = 0; a.y = 0; a.z = 0;
+  CHECK(ebadge_accel_magnitude(&a) == 0, "zero magnitude is not zero");
+  CHECK(ebadge_accel_magnitude(NULL) == 0, "NULL magnitude not zero");
+
+  struct ebadge_shake s;
+  ebadge_shake_init(&s);
+
+  /* The first sample only seeds the baseline; it must never fire. */
+  struct ebadge_accel rest = {0, 0, 9806};
+  CHECK(!ebadge_shake_update(&s, &rest, 0u), "first sample fired");
+
+  /* Sitting still for ten seconds must produce nothing. This is the case that
+   * would ruin the product: the badge is worn, not held. */
+  int fires = 0;
+  for (uint32_t t = 100u; t <= 10000u; t += 100u)
+    if (ebadge_shake_update(&s, &rest, t)) fires++;
+  CHECK(fires == 0, "fired while the badge was at rest");
+
+  /* A deliberate shake fires exactly once, even though the excursion lasts
+   * for several samples. */
+  struct ebadge_accel hard = {0, 0, 18806}; /* 9806 + 9000 deviation */
+  fires = 0;
+  for (uint32_t t = 10100u; t <= 10600u; t += 100u)
+    if (ebadge_shake_update(&s, &hard, t)) fires++;
+  CHECK(fires == 1, "one shake did not report exactly once");
+
+  /* Continued shaking is rate limited by the cooldown rather than reported on
+   * every sample. */
+  fires = 0;
+  for (uint32_t t = 11000u; t <= 15000u; t += 100u)
+    if (ebadge_shake_update(&s, &hard, t)) fires++;
+  CHECK(fires <= 3, "cooldown did not rate limit repeated shakes");
+
+  /* A deviation below the release threshold must not re-arm, so a slow drift
+   * cannot be mistaken for a shake. */
+  ebadge_shake_init(&s);
+  ebadge_shake_update(&s, &rest, 0u);
+  struct ebadge_accel small = {0, 0, 9806 + 4000}; /* above release, below trigger */
+  fires = 0;
+  for (uint32_t t = 100u; t <= 3000u; t += 100u)
+    if (ebadge_shake_update(&s, &small, t)) fires++;
+  CHECK(fires == 0, "a sub-threshold wobble fired");
+
+  /* Back to rest must re-arm, so a second real shake is still reported. */
+  for (uint32_t t = 3100u; t <= 4000u; t += 100u)
+    ebadge_shake_update(&s, &rest, t);
+  CHECK(ebadge_shake_update(&s, &hard, 4100u), "did not re-arm after rest");
+
+  /* Slow thermal or orientation drift must not fire: the baseline follows it. */
+  ebadge_shake_init(&s);
+  ebadge_shake_update(&s, &rest, 0u);
+  fires = 0;
+  for (uint32_t i = 1; i <= 200; i++)
+    {
+      struct ebadge_accel drift = {0, 0, 9806 + (int32_t)i * 5};
+      if (ebadge_shake_update(&s, &drift, i * 50u)) fires++;
+    }
+  CHECK(fires == 0, "slow drift fired");
+
+  /* Free fall is a big deviation in the other direction and must fire. */
+  ebadge_shake_init(&s);
+  ebadge_shake_update(&s, &rest, 0u);
+  struct ebadge_accel falling = {0, 0, 0};
+  CHECK(ebadge_shake_update(&s, &falling, 100u), "free fall did not fire");
+
+  /* A shake made right after power-on must not be swallowed by the cooldown:
+   * last_trigger_ms starts at 0, and 0 is also a valid tick. */
+  ebadge_shake_init(&s);
+  ebadge_shake_update(&s, &rest, 0u);
+  CHECK(ebadge_shake_update(&s, &hard, 50u),
+        "a shake just after boot was swallowed by the cooldown");
+
+  /* NULL safety: this is fed from a device read that can fail. */
+  CHECK(!ebadge_shake_update(NULL, &rest, 0u), "NULL detector fired");
+  CHECK(!ebadge_shake_update(&s, NULL, 0u), "NULL sample fired");
+  ebadge_shake_init(NULL);
+}
+
 int main(void)
 {
   printf("ebadge logic tests\n");
@@ -503,6 +604,7 @@ int main(void)
   test_calendar();
   test_theme();
   test_power();
+  test_shake();
   printf("\n%d checks, %d failures\n", checks, failures);
   if (failures)
     {

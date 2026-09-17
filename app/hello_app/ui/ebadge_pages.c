@@ -4,6 +4,7 @@
 #include "ebadge_theme.h"
 #include "ebadge_deco.h"
 #include "ebadge_display.h"
+#include "../core/ebadge_imu.h"
 #include "ebadge_date_editor.h"
 #include "ebadge_text_editor.h"
 #include "../core/ebadge_calendar.h"
@@ -66,6 +67,7 @@ static struct
   lv_obj_t *paper[EBADGE_PAPER_COUNT];
   lv_obj_t *storage;
   lv_obj_t *display;
+  lv_obj_t *imu;
 
   int scale, origin_x, origin_y;
   enum ebadge_page page;
@@ -462,6 +464,7 @@ static void paint_appearance(void)
                     ebadge_theme_paper_note(ebadge_view_paper()));
   lv_label_set_text(pages.storage, ebadge_view_storage_status());
   lv_label_set_text(pages.display, ebadge_display_status());
+  lv_label_set_text(pages.imu, ebadge_imu_status());
 }
 
 /* ---------------------------------------------------------------- public */
@@ -556,11 +559,12 @@ void ebadge_pages_open(lv_obj_t *root, int scale, int x, int y)
                             paper_cb, (void *)(intptr_t)i);
 
   pages.note = text(pages.choices, "", 24, 300, 342, 0x000000);
-  pages.storage = text(pages.choices, "", 24, 372, 342, 0x000000);
+  pages.storage = text(pages.choices, "", 24, 408, 342, 0x000000);
   /* Shown so the acceptance run can confirm on the panel whether panel power
    * is really controllable, instead of taking the code's word for it.
    */
   pages.display = text(pages.choices, "", 24, 336, 342, 0x000000);
+  pages.imu = text(pages.choices, "", 24, 372, 342, 0x000000);
 
   lv_obj_add_flag(pages.panel, LV_OBJ_FLAG_HIDDEN);
   ebadge_pages_apply_theme();
@@ -604,6 +608,7 @@ void ebadge_pages_apply_theme(void)
   lv_obj_set_style_text_color(pages.note, lv_color_hex(palette.muted), 0);
   lv_obj_set_style_text_color(pages.storage, lv_color_hex(palette.muted), 0);
   lv_obj_set_style_text_color(pages.display, lv_color_hex(palette.muted), 0);
+  lv_obj_set_style_text_color(pages.imu, lv_color_hex(palette.muted), 0);
   for (int i = 0; i < 2; i++)
     lv_obj_set_style_text_color(pages.choice_heading[i],
                                 lv_color_hex(palette.muted), 0);
@@ -737,5 +742,10 @@ void ebadge_pages_tick(uint32_t now)
       paint_anniversary();
       return;
     }
+  /* The appearance page shows the chooser rather than an action button, so the
+   * button has to be hidden explicitly: layout_text_page() would also hide the
+   * chooser, and without this the button from the previous page stays visible.
+   */
+  set_hidden(pages.action, true);
   paint_appearance();
 }
