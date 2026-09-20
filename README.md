@@ -50,6 +50,7 @@
 | `quickapp/hello_quickapp/` | 快应用目录（本次未使用） |
 | `contest2026_462_shijichuangyou.xml` | 团队仓 manifest：把本仓子目录映射到 openvela 工程位置 |
 | `LICENSE` | Apache License 2.0 全文 |
+| `submission/` | 另外三项提交物：作品介绍文档（PDF + DOCX）、路演 PPT、演示视频脚本（见该目录 `README.md`） |
 
 ---
 
